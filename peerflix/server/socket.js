@@ -12,6 +12,12 @@ var chatrooms = {};
 
   io.sockets.on('connection', function (socket) {
       
+    socket.on('disconnect', function(nickname) {
+        socket.leave(socket.roomName);
+        io.sockets.in(socket.roomName).emit('chatUserCount',Object.keys(io.sockets.clients(socket.roomName)).length);
+    });
+      
+      
     socket.on('chatSetNickname', function(nickname) {
         socket.nickname = nickname;
     });

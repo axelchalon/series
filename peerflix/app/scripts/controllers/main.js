@@ -26,9 +26,8 @@ tv chat temps réel temps restant
 COMMENT RECUP A PARTIR DE BDD? via api !
 
 @todo récupérer séances publiques et show tv par ajax script php api bdd (recevoir le poster aussi)
-@todo pouvoir rejoindre une room privée (mettre un timer?)
-@todo synchronisation ? ==> pour rooms privées, quand l'utilisateur se connecte à room existante, il envoie "getPeerTimeInVideo" le créateur re nvoie "peerTimeInVideoIn5Seconds" et le nb de secondes auxquelles il est + 5secondes. Si on n'arrive pas à y aller (buffer) on renvoie un getepeertime dans 10 secondes. /// => pour séances publiques 
-@todo javascript afficher "rejoindre room" pour séances publiques et tv show moins cinq minutes
+@todo PRIORITE 1 - pouvoir rejoindre une room privée (mettre un timer?)
+@todo synchronisation ? ==> pour rooms privées, quand l'utilisateur se connecte à room existante, il envoie "getPeerTimeInVideo" le créateur re nvoie "peerTimeInVideoIn5Seconds" et le nb de secondes auxquelles il est + 5secondes. Si on n'arrive pas à y aller (buffer) on renvoie un getepeertime dans 10 secondes. /// => pour séances publiques  
 @todo player juste visible par créateur room privée (évènement play, pause (getcurrenttime))
 @todo buffering ==> seek un instnat plus tard et pause ; play quand prêt?
 
@@ -81,27 +80,47 @@ var socket = io.connect('http://127.0.0.1:9000');
 angular.module('peerflixServerApp')
   .controller('MainCtrl', function ($scope, $resource, $log, $q, $upload, torrentSocket, $http) {
     
-    
+   /* 
     $scope.seancesPubliques = [
         {magnet: 'magnet:?xt=urn:btih:4E660F05AD95F61950985C3A6702AE605E41B649&dn=into+the+woods+2014+1080p+brrip+x264+yify&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce',
          startsAt: 1429185000,
         name:'into the woods'},
         {magnet: 'magnet:?xt=urn:btih:4E660F05AD95F61950985C3A6702AE605E41B649&dn=into+the+woods+2014+1080p+brrip+x264+yify&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce',
-         startsAt: 1429189999,
+         startsAt: 1429200757,
         name:'into the woods2'},
         {magnet: 'magnet:?xt=urn:btih:4E660F05AD95F61950985C3A6702AE605E41B649&dn=into+the+woods+2014+1080p+brrip+x264+yify&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce',
          startsAt: 1429199600,
         name:'into the woods3'}];
+    */
+    
+    $scope.seancesPubliques = [];
+    
+    $http.get('http://127.0.0.1/series/fetchPublicSessions.php')
+        .success(function(data, status, headers, config) {
+         $scope.seancesPubliques = data;
+        }).error(function(data, status, headers, config) {
+         console.log(status);
+        });
+        
     
     
-    $scope.tvShows = [
+  /*  $scope.tvShows = [
         {startsAt: 1429185000,
         name:'Game of Thrones S03E01'
         },
     {startsAt: 1429185000,
         name:'Game of Thrones S03E01'
         }];
+    */
     
+    $scope.tvShows = [];
+    
+    $http.get('http://127.0.0.1/series/fetchTvShows.php')
+        .success(function(data, status, headers, config) {
+         $scope.tvShows = data;
+        }).error(function(data, status, headers, config) {
+         console.log(status);
+        });
     
     var intervalID = window.setInterval(function() {
         $scope.$apply(function(){
@@ -123,7 +142,9 @@ angular.module('peerflixServerApp')
     function load() {
       var torrents = Torrent.query(function () {
         $scope.torrents = torrents;
-         // $scope.removeAll(); fonctionne que si appelé un bon moment après
+          //setTimeout(function(){$scope.removeAll(); // fonctionne que si appelé un bon moment après
+          // $scope.torrents = [];
+            //                   },1000);
       });
     }
     
@@ -135,8 +156,11 @@ angular.module('peerflixServerApp')
         return '/torrents/'+infohash+'/files/'+encodeURIComponent(filepath);
     }
     
-    $scope.searchSeries = function(series,season,episode)
+    $scope.searchSeries = function()
     {
+        var series = searchSeries_series;
+        var season = searchSeries_season;
+        var episode = searchSeries_episode;
      $http.get('http://127.0.0.1/series/getMagnet.php?q=' + encodeURIComponent(series + ' S' + (season>9 ? season : '0' + season) + 'E' + (episode > 9 ? episode : '0' + episode) + ' category:tv'))
         .success(function(data, status, headers, config) {
          $scope.downloadFromMagnet(data);
@@ -199,7 +223,7 @@ angular.module('peerflixServerApp')
             
             
             socket.emit('chatJoinRoom','prv_'+torrent.infoHash);
-            socket.emit('chatSetNickname',prompt('USERNAME pour le tchat ?'));
+            socket.emit('chatSetNickname',prompt('Quel pseudonyme souhaitez-vous utiliser pour le tchat ?'));
             
             if (typeof $scope.startsAt !== 'undefined') // @todo n'éxecuter ça qu'une fois
             {
@@ -328,7 +352,7 @@ angular.module('peerflixServerApp')
     $scope.joinTVChat = function (channelIndex) {
         $scope.viewView = 'watchChatOnly';
         socket.emit('chatJoinRoom','tv_'+channelIndex);
-        socket.emit('chatSetNickname',prompt('USERNAME pour le tchat ?'));
+        socket.emit('chatSetNickname',prompt('Quel pseudonyme souhaitez-vous utiliser pour le tchat ?'));
     }
     
     // supprimmable
