@@ -105,8 +105,20 @@
         <input type="text" placeholder="chercher EPISODE" ng-model="episode" value="1">
         <button type="button" ng-click="searchSeries(series,season,episode)">go</button>
 
+       <style>
+        button { /*pointer-events: none;*/ }
+        .joinable { border: 3px solid green; /*pointer-events: all;*/ }
+        </style>
+       
         SEANCES PUBLIQUES :
-        <button ng-click="downloadSeancePublique('magnet:?xt=urn:btih:4E660F05AD95F61950985C3A6702AE605E41B649&dn=into+the+woods+2014+1080p+brrip+x264+yify&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce',1429145180)" >INTO THE WOODS</button>
+        <button ng-click="downloadSeancePublique(seancePublique.magnet,seancePublique.startsAt)" ng-repeat="seancePublique in seancesPubliques" ng-class="{joinable: seancePublique.joinable}">{{seancePublique.name}}</button>
+        
+        SEANCES PUBLIQUES :
+        <button ng-click="joinTVChat($index)" ng-repeat="tvShow in tvShows" ng-class="{joinable: seancePublique.joinable}">{{tvShow.name}}</button>
+        
+        
+        <!-- 'magnet:?xt=urn:btih:4E660F05AD95F61950985C3A6702AE605E41B649&dn=into+the+woods+2014+1080p+brrip+x264+yify&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce',1429185000 -->
+        
         
         A LA TV
         <button ng-click="joinTVChat(0)" >grey's anatomy</button>
@@ -120,6 +132,10 @@
 
         <video id="player" controls ng-src="{{getVideoSrc(beingPlayed_infoHash,beingPlayed_filePath)}}">
         </video>
+        
+        <span ng-hide="timeLeft === false">
+            temps restant : {{timeLeft}}
+        </span>
         
        
     </div>
