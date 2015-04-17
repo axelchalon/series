@@ -1,0 +1,99 @@
+@import url(http://fonts.googleapis.com/css?family=Montserrat);
+
+body {
+  height: 100%;
+  width: 100%;
+  color: #dadada;
+  font-family: 'Montserrat', sans-serif;
+  overflow: hidden;
+}
+
+/* Afin d'élargir notre vidéo à 100% dans la colonne qui lui
+est réservée, le surplus d'espace sera en noir solution non
+définitive */
+.video {
+  width: 100%;
+  height: 100vh;
+  background: #000;
+}
+
+/*
+  En va de même pour le chat. Utilisation de "vh" afin de
+  forcer le height.
+  */
+  .chat {
+    width: 100%;
+    height: 100vh;
+    background: #dadada;
+  }
+
+/*
+  Espace pour écrire son message (40*3=)120 charctères
+  max visible en même dans la chatbar.
+  */
+  .type {
+    color: #111;
+    width: 90%;
+    margin: 5%;
+    margin-top: 80vh;
+  }
+
+
+  .submit {
+    outline: none;
+    background: #ff320b;
+    border: 0px;
+    margin-left: 60%;
+    color: white;
+    padding: 7px;
+    width: 7vw;
+    border-bottom: 2px solid #C70A2A;
+  }
+
+/*
+  Pour donner un petit effet 3D lorsque l'on clique sur le 
+  bouton
+  */
+  .submit:active {
+    outline: none;
+    background: #ff320b;
+    border: 0px;
+    margin-left: 60%;
+    color: white;
+    padding: 7px;
+    width: 7vw;
+    border-top: 2px solid #C70A2A;
+  }
+
+/*
+  Là où s'affichent les messages
+  */
+  .chatbox {
+    color: #111;
+    position: absolute;
+    left:5%;
+    top:5%;
+    width: 90%;
+    height: 72%;
+    background: #dadada;
+      overflow: auto;
+  }
+/*
+  Emplacement du titre
+  */
+  .title {
+    text-align: center;
+    color: #111;
+    position: absolute;
+    left:5%;
+    top:1%;
+    width: 90%;
+    height: 5%;
+  }
+
+/*
+  On enlève le surplus de padding fait par bootstrap
+  */
+  .container-fluid, .col-md-9, .col-md-3 {
+    padding: 0px; 
+  }

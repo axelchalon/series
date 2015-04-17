@@ -35,7 +35,7 @@ COMMENT RECUP A PARTIR DE BDD? via api !
 
 @todo utiliser les routes pour pouvoir gérer les urls? comment partager sinon
 
-
+@todo removeall
 
 OK : synchro séances publiques
 
@@ -77,7 +77,7 @@ console.log(get_time_diff(1429187908*1000));
 
 var socket = io.connect('http://127.0.0.1:9000');
 
-angular.module('peerflixServerApp')
+var appx = angular.module('peerflixServerApp')
   .controller('MainCtrl', function ($scope, $resource, $log, $q, $upload, torrentSocket, $http) {
     
    /* 
@@ -92,7 +92,7 @@ angular.module('peerflixServerApp')
          startsAt: 1429199600,
         name:'into the woods3'}];
     */
-    
+    console.log('ctrl');
     $scope.seancesPubliques = [];
     
     $http.get('http://127.0.0.1/series/fetchPublicSessions.php')
@@ -131,27 +131,30 @@ angular.module('peerflixServerApp')
             
             for (var i=0; i<$scope.tvShows.length; i++) {
                 if (Date.now()/1000>$scope.tvShows[i].startsAt-300)
+                {
+                    console.log('j');
                     $scope.tvShows[i].joinable = true;
+                }
             }
         });
     }, 1000);
     
     
-    var Torrent = $resource('/torrents/:infoHash');
+    $scope.Torrent = $resource('/torrents/:infoHash');
 
     function load() {
-      var torrents = Torrent.query(function () {
+      var torrents = $scope.Torrent.query(function () {
         $scope.torrents = torrents;
-          //setTimeout(function(){$scope.removeAll(); // fonctionne que si appelé un bon moment après
-          // $scope.torrents = [];
-            //                   },1000);
+           setTimeout(function(){$scope.removeAll(); // fonctionne que si appelé un bon moment après
+            $scope.torrents = [];
+                             },1000);
       });
     }
     
-    $scope.getVideoSrc = function(infohash,filepath) // pk appelé plein de fois?
+    $scope.getVideoSrc = function(infohash,filepath) // souvent appelé
     {
-        console.log(infohash);
-        console.log(filepath);
+        /*console.log(infohash);
+        console.log(filepath);*/
         // /torrents/{{ torrent.infoHash }}/files/{{ file.path | encodeUri }}
         return '/torrents/'+infohash+'/files/'+encodeURIComponent(filepath);
     }
@@ -189,9 +192,9 @@ angular.module('peerflixServerApp')
        });
     });
     
-    function loadTorrent(hash) {
+    $scope.loadTorrent = function(hash) {
     
-      return Torrent.get({ infoHash: hash }).$promise.then(function (torrent) {
+      return $scope.Torrent.get({ infoHash: hash }).$promise.then(function (torrent) {
           
         var existing = _.find($scope.torrents, { infoHash: hash });
         if (existing) {
@@ -311,12 +314,12 @@ angular.module('peerflixServerApp')
     
     */
 
-    function findTorrent(hash) {
+    $scope.findTorrent = function (hash) {
       var torrent = _.find($scope.torrents, { infoHash: hash });
       if (torrent) {
         return $q.when(torrent);
       } else {
-        return loadTorrent(hash);
+        return $scope.loadTorrent(hash);
       }
     }
 
@@ -339,9 +342,9 @@ angular.module('peerflixServerApp')
         $scope.startsAt = startsAt;
         console.log(magnet);
         console.log('sp - dl');
-        Torrent.save({ link: magnet }).$promise.then(function (torrent) {
+        $scope.Torrent.save({ link: magnet }).$promise.then(function (torrent) {
             
-            loadTorrent(torrent.infoHash);
+            $scope.loadTorrent(torrent.infoHash);
            
         });
         
@@ -358,16 +361,16 @@ angular.module('peerflixServerApp')
     // supprimmable
     $scope.download = function () {
       if ($scope.link) {
-        Torrent.save({ link: $scope.link }).$promise.then(function (torrent) {
-          loadTorrent(torrent.infoHash);
+        $scope.Torrent.save({ link: $scope.link }).$promise.then(function (torrent) {
+          $scope.loadTorrent(torrent.infoHash);
         });
         $scope.link = '';
       }
     };
     
     $scope.downloadFromMagnet = function (magnet) {
-        Torrent.save({ link: magnet }).$promise.then(function (torrent) {
-          loadTorrent(torrent.infoHash);
+        $scope.Torrent.save({ link: magnet }).$promise.then(function (torrent) {
+          $scope.loadTorrent(torrent.infoHash);
         });
     };
 
@@ -376,7 +379,7 @@ angular.module('peerflixServerApp')
         url: '/upload',
         file: file
       }).then(function (response) {
-        loadTorrent(response.data.infoHash);
+        $scope.loadTorrent(response.data.infoHash);
       });
     };
 
@@ -395,46 +398,46 @@ angular.module('peerflixServerApp')
       _.forEach($scope.torrents,function(torrent) {
           console.log('removing :');
           console.log(torrent);
-           Torrent.remove({ infoHash: torrent.infoHash });
+           $scope.Torrent.remove({ infoHash: torrent.infoHash });
       });
       $scope.torrents = {};
     };
     
     $scope.remove = function (torrent) {
-      Torrent.remove({ infoHash: torrent.infoHash });
+      $scope.Torrent.remove({ infoHash: torrent.infoHash });
       _.remove($scope.torrents, torrent);
     };
 
     torrentSocket.on('verifying', function (hash) {
-      findTorrent(hash).then(function (torrent) {
+      $scope.findTorrent(hash).then(function (torrent) {
         torrent.ready = false;
       });
     });
 
     torrentSocket.on('ready', function (hash) {
-      loadTorrent(hash);
+      $scope.loadTorrent(hash);
     });
 
     torrentSocket.on('interested', function (hash) {
-      findTorrent(hash).then(function (torrent) {
+      $scope.findTorrent(hash).then(function (torrent) {
         torrent.interested = true;
       });
     });
 
     torrentSocket.on('uninterested', function (hash) {
-      findTorrent(hash).then(function (torrent) {
+      $scope.findTorrent(hash).then(function (torrent) {
         torrent.interested = false;
       });
     });
 
     torrentSocket.on('stats', function (hash, stats) {
-      findTorrent(hash).then(function (torrent) {
+      $scope.findTorrent(hash).then(function (torrent) {
         torrent.stats = stats;
       });
     });
 
     torrentSocket.on('download', function (hash, progress) {
-      findTorrent(hash).then(function (torrent) {
+      $scope.findTorrent(hash).then(function (torrent) {
         torrent.progress = progress;
       });
     });
@@ -448,7 +451,58 @@ angular.module('peerflixServerApp')
     });
 
     torrentSocket.on('connect', load);
-  });
+      
+      $scope.hello = 'hello';
+  }).controller('Sp', function ($scope, $resource, $log, $q, $upload, torrentSocket, $http, $routeParams) {
+      
+      
+      var index = $routeParams.index;
+      
+      setTimeout(function(){
+          $scope.intervalLoadTorrent = setInterval(function(){
+              if (typeof $scope.seancesPubliques !== 'undefined' && $scope.seancesPubliques.length>0)
+              {
+                  console.log('clear');
+                  clearInterval($scope.intervalLoadTorrent);
+              }
+              else
+              {
+                  console.log('nope');
+                    return;   
+              }
+
+            $scope.startsAt = $scope.seancesPubliques[index].startsAt;
+        console.log($scope.seancesPubliques[index].magnet);
+              console.log($scope.startsAt);
+            $scope.Torrent.save({ link: $scope.seancesPubliques[index].magnet }).$promise.then(function (torrent) {
+                console.log('LOAD');
+                $scope.loadTorrent(torrent.infoHash);
+
+            });
+
+          },1000);
+      },1500); // appelé après removeAll
+      
+    });
+
+
+
+
+appx.config(['$routeProvider',
+  function($routeProvider) {
+    $routeProvider.
+      when('/', {
+        templateUrl: 'partials/phone-list.html',
+        controller: 'PhoneListCtrl'
+      }).
+      when('/sp/:index', {
+        templateUrl: 'views/chat.html',
+        controller: 'Sp'
+      })/*.
+      otherwise({
+        redirectTo: '/404'
+      });*/
+  }]);
 
 
 

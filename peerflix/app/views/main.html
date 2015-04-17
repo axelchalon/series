@@ -102,26 +102,12 @@
         <script type="text/javascript" src="js/index.js"></script>
     </div>
     <div ng-switch-when="watch">
-        WATCH
-
-        <video id="player" controls ng-src="{{getVideoSrc(beingPlayed_infoHash,beingPlayed_filePath)}}">
-        </video>
-        
-        <span ng-hide="timeLeft === false">
-            temps restant : {{timeLeft}}
-        </span>
-        
+       chat (obsolete)
        
     </div>
       <div ng-switch-when="watchChatOnly">
         WATCH CHAT ONLY
     </div>
-       nb participants : {{chatUserCount}}
-        <ul id="chat">
-            <li ng-repeat="chatMessage in chatMessages"><strong>{{chatMessage.nickname}}</strong> : {{chatMessage.message}}</li>
-        </ul>
-        <input type="text" placeholder="Chatter..." ng-model="chatMessage">
-        <button type="button" ng-click="chatSendMessage(chatMessage)">Envoyer</button>
-<a ng-click="removeAll()">removeall</a>
+       
 
 </div>

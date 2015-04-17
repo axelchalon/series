@@ -27,7 +27,7 @@ $ret = [];
 
 		$info['name'] = $series->name;
 		$timestamp = strtotime($series->time);
-		$info['start_time'] = $timestamp;
+		$info['startsAt'] = $timestamp;
 		$info['startsAt_str'] = date('H:i',$timestamp);
 		$info['channel'] = $series->channel;
 		$info['poster'] = 'https://image.tmdb.org/t/p/w185'.$res['results'][0]['poster_path'];
