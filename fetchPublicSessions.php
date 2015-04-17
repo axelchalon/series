@@ -8,7 +8,7 @@ include 'config.php';
 	magnet
 */
 
-	$prepare = $pdo->query('SELECT * FROM public_sessions');
+	$prepare = $pdo->query('SELECT name,magnet,time,UNIX_TIMESTAMP(time) startsAt FROM public_sessions');
 $ret = [];
 	while($series = $prepare->fetch()){
 
@@ -26,7 +26,7 @@ $ret = [];
 
 		$info['name'] = $series->name;
 		$timestamp = strtotime($series->time);
-		$info['startsAt'] = $timestamp;
+		$info['startsAt'] = $series->startsAt;
 		$info['startsAt_str'] = date('H:i',$timestamp);
 		$info['magnet'] = $series->magnet;
 		$info['poster'] = 'https://image.tmdb.org/t/p/w185'.$res['results'][0]['poster_path'];

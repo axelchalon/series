@@ -80,6 +80,8 @@ var socket = io.connect('http://127.0.0.1:9000');
 var appx = angular.module('peerflixServerApp')
   .controller('MainCtrl', function ($scope, $resource, $log, $q, $upload, torrentSocket, $http) {
     
+      
+      $scope.startsAt = {startsAt: false};
    /* 
     $scope.seancesPubliques = [
         {magnet: 'magnet:?xt=urn:btih:4E660F05AD95F61950985C3A6702AE605E41B649&dn=into+the+woods+2014+1080p+brrip+x264+yify&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce',
@@ -228,15 +230,17 @@ var appx = angular.module('peerflixServerApp')
             socket.emit('chatJoinRoom','prv_'+torrent.infoHash);
             socket.emit('chatSetNickname',prompt('Quel pseudonyme souhaitez-vous utiliser pour le tchat ?'));
             
-            if (typeof $scope.startsAt !== 'undefined') // @todo n'éxecuter ça qu'une fois
+            
+             console.log($scope.startsAt);  
+            if (typeof $scope.startsAt !== 'undefined' && typeof $scope.startsAt.startsAt !== 'undefined' && $scope.startsAt.startsAt !== false) // @todo n'éxecuter ça qu'une fois
             {
-                
+                console.log('IN DA COND'); 
                 $scope.timeLeftInterval = setInterval(function(){
                     
                     $scope.$apply(function(){
-                        console.log('starts at ms : ' + $scope.startsAt*1000 );
+                        console.log('starts at ms : ' + $scope.startsAt.startsAt*1000 );
                         console.log('now ms : ' + Date.now());
-                        if ($scope.startsAt*1000<Date.now())
+                        if ($scope.startsAt.startsAt*1000<Date.now())
                         {
                             console.log('killing timeleft');
                             $scope.timeLeft = false;
@@ -244,8 +248,8 @@ var appx = angular.module('peerflixServerApp')
                             return;
                         }
                         
-                        var timeLeft = new Date($scope.startsAt*1000-Date.now());
-                         $scope.timeLeft = (timeLeft.getMinutes()>9 ? timeLeft.getMinutes() : '0' + timeLeft.getMinutes())  + ' : ' + (timeLeft.getSeconds()>9 ? timeLeft.getSeconds() : '0' + timeLeft.getSeconds());
+                        var timeLeft = new Date($scope.startsAt.startsAt*1000-Date.now());
+                         $scope.timeLeft = (timeLeft.getMinutes()>9 ? timeLeft.getMinutes() : '0' + timeLeft.getMinutes()) + ' : ' + (timeLeft.getSeconds()>9 ? timeLeft.getSeconds() : '0' + timeLeft.getSeconds());
                     });
                 },1000);
                 
@@ -253,13 +257,23 @@ var appx = angular.module('peerflixServerApp')
                 console.log('routine to play');
                 /*if ($scope.startsAt<Math.floor(Date.now() / 1000)) // si la séance a déjà commencé
                 {*/
+                var lastCanPlay = false;
                     setTimeout(function(){
                     document.getElementById('player').addEventListener("canplay",function() {
-                        console.log('setting current time');
                         
-                        if ($scope.startsAt<Math.floor(Date.now() / 1000))
+                        if (lastCanPlay !== false && Date.now()/1000-lastCanPlay<5)
+                            return;
+                        
+                        console.log('llcp : ' + lastCanPlay);
+                        lastCanPlay = Date.now() / 1000;
+                        console.log('lcp : ' + lastCanPlay);
+                        console.log('diff : ' + Date.now()/1000-lastCanPlay);
+                        console.log('setting current timex');
+                        
+                        if ($scope.startsAt.startsAt<Math.floor(Date.now() / 1000))
                         {
-                            document.getElementById('player').currentTime = Math.floor(Date.now() / 1000) - $scope.startsAt;
+                            console.log('déjà commencé : ' + (Math.floor(Date.now() / 1000) - $scope.startsAt.startsAt));
+                            document.getElementById('player').currentTime = Math.floor(Date.now() / 1000) - $scope.startsAt.startsAt;
                             document.getElementById('player').play();
                         }
                         else
@@ -267,7 +281,7 @@ var appx = angular.module('peerflixServerApp')
                             setTimeout(function(){
                                 console.log('play in timeout');
                                 document.getElementById('player').play(); // commencement synchro
-                            },Math.max(500,1000*($scope.startsAt-Math.floor(Date.now() / 1000)))); // doit être > qq sec
+                            },Math.max(500,1000*($scope.startsAt.startsAt-Math.floor(Date.now() / 1000)))); // doit être > qq sec
                         }
                     });
                     },500); // le temps que la vue change
@@ -327,6 +341,10 @@ var appx = angular.module('peerflixServerApp')
 
     $scope.chatSendMessage = function (message) {
       socket.emit('chatSendMessage',message);
+      $scope.$apply(function()
+                   {
+          $scope.chatMessage = '';
+      });
     };
     
     $scope.keypress = function (e) {
@@ -339,7 +357,7 @@ var appx = angular.module('peerflixServerApp')
     $scope.downloadSeancePublique = function (magnet,startsAt)
     {
         
-        $scope.startsAt = startsAt;
+        $scope.startsAt = {startsAt: startsAt};
         console.log(magnet);
         console.log('sp - dl');
         $scope.Torrent.save({ link: magnet }).$promise.then(function (torrent) {
@@ -471,7 +489,7 @@ var appx = angular.module('peerflixServerApp')
                     return;   
               }
 
-            $scope.startsAt = $scope.seancesPubliques[index].startsAt;
+            $scope.startsAt.startsAt = $scope.seancesPubliques[index].startsAt;
         console.log($scope.seancesPubliques[index].magnet);
               console.log($scope.startsAt);
             $scope.Torrent.save({ link: $scope.seancesPubliques[index].magnet }).$promise.then(function (torrent) {
@@ -492,8 +510,8 @@ appx.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
       when('/', {
-        templateUrl: 'partials/phone-list.html',
-        controller: 'PhoneListCtrl'
+        templateUrl: 'views/home.html'
+        // controller: 'PhoneListCtrl'
       }).
       when('/sp/:index', {
         templateUrl: 'views/chat.html',
@@ -504,6 +522,19 @@ appx.config(['$routeProvider',
       });*/
   }]);
 
+appx.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
+});
 
 
 /*

@@ -1,0 +1,99 @@
+
+        <div class="bg"></div>
+
+        <img src="img/logo.png" class="logo">
+
+        <div class="container">
+            <div class="col-md-5">
+                ON A TOUS <br>UNE <span class="red" data-period="2000"
+                data-rotate='[ "EMOTION", "FOLIE", "ENVIE", "PASSION" ]'></span><br> À PARTAGER
+            </div>
+            <div class="col-md-4 col-md-offset-3">
+                <div class="form-bg">
+                    Regardez vos séries <br> seul ou à plusieurs!
+                    <form id="landing-form">
+                        <input type="text" class="name" name="name" placeholder="Nom de la série" /><br><br>
+                        <ul id="progressbar">
+                            <li class="first">Nom</li>
+                            <li>Saison</li>
+                            <li>Épisode</li>
+                        </ul>
+                        <br>
+                        <!-- <button type="button" class="next" name="next" value="Next">NEXT</button> -->
+                        <input id="searchSeries_next" type="button" class="next" name="next" value="REGARDER"></input>
+                        <input id="searchSeries" type="button" class="next" name="next" value="C'EST PARTI !" ng-click="searchSeries()"></input>
+
+                    </form>
+
+                    <div class="or"> Ou </div>
+                    Consulter notre <br> catalogue de séries
+
+                    <!-- <button type="button" class="discover" name="discover">DISCOVER</button> -->
+
+                    <input type="button" class="discover" name="discover" value="DISCOVER"></input>
+                </div>
+            </div>
+        </div>
+
+        <a href="#series-box">
+            <img src="img/arrow-white.png" class="arrow"></img>
+        </a>
+
+
+        <div class="lower">
+            <div class="col-md-8" id="series-box">
+                <div class="col-md-6 title">
+                    COMMENTEZ VOTRE <br> PROGRAMME TV PREFERE EN LIVE! <br>
+                  
+                  
+                      <div class="slide">
+                        <div class="poster" ng-click="joinTVChat($index)" ng-repeat="tvShow in tvShows" ng-class="{joinable: tvShow.joinable}" style="background-image: url({{tvShow.poster}});" title="{{tvShow.name}}"><span>Ce soir à {{tvShow.startsAt_str}} sur {{tvShow.channel}}</span></div>
+        
+                        <div class="serie-title"></div>
+                    </div>
+                </div>
+
+                <div class="verticalLine"></div>
+
+                <div class="col-md-5 title2">
+                    REGARDEZ UNE <br>DE NOS SEANCES PUBLIQUES. <br>
+                      <div class="slide">
+                        <a class="poster" ng-href="#/sp/{{$index}}" ng-repeat="seancePublique in seancesPubliques" ng-class="{joinable: seancePublique.joinable}" style="background-image: url({{seancePublique.poster}});" title="{{seancePublique.name}}"><span>Ce soir à {{seancePublique.startsAt_str}}</span></a>
+        
+                        <div class="serie-title"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--
+        <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script> -->
+       
+       
+      <!--  <input type="text" placeholder="chercher SERIE" ng-model="series" value="game of thrones">
+        <input type="text" placeholder="chercher SAISON" ng-model="season" value="3">
+        <input type="text" placeholder="chercher EPISODE" ng-model="episode" value="1">
+        <button type="button" ng-click="searchSeries(series,season,episode)">go</button>
+-->
+       <!--<style>
+        button { /*pointer-events: none;*/ }
+        .joinable { border: 3px solid green; /*pointer-events: all;*/ }
+        </style>-->
+       
+       <!-- SEANCES PUBLIQUES :
+       
+       TVSHOW
+          -->
+        
+        <!-- 'magnet:?xt=urn:btih:4E660F05AD95F61950985C3A6702AE605E41B649&dn=into+the+woods+2014+1080p+brrip+x264+yify&tr=udp%3A%2F%2Fopen.demonii.com%3A1337%2Fannounce',1429185000 -->
+        
+        
+        <!--A LA TV
+        <button ng-click="joinTVChat(0)" >grey's anatomy</button>
+       -->
+       
+       
+
+
+        <script type="text/javascript" src="js/index.js"></script>

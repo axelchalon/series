@@ -1,26 +1,22 @@
- <div class="container-fluid">
-            <div class="col-md-9">
-                <video class="video" id="player" controls ng-src="{{getVideoSrc(beingPlayed_infoHash,beingPlayed_filePath)}}">
-                </video>
-            </div>
-            <div class="col-md-3">
-                    <div class="title">Chatroom ({{chatUserCount}} personnes)</div>
-                    <textarea class="type" name="message" cols="40" rows="3"></textarea>
-                    <input type="button" class="submit" value="ENVOYER" ng-click="chatSendMessage(chatMessage)"></input>
-                    <div class="chatbox">
-                        <ul id="chat">
-                            <li ng-repeat="chatMessage in chatMessages"><strong>{{chatMessage.nickname}}</strong> : {{chatMessage.message}}</li>
-                        </ul>
-                    </div>
-                    
-                    <input type="text" placeholder="Chatter..." ng-model="chatMessage">
-                    <!-- <a ng-click="removeAll()">removeall</a> -->
-            </div>
+<div class="container-fluid">
+	<div class="col-md-9">
+		<video class="video" id="player" ng-src="{{getVideoSrc(beingPlayed_infoHash,beingPlayed_filePath)}}">
+		</video>
+	</div>
+	<div class="col-md-3">
+		<div class="title">
+			Chatroom : {{chatUserCount}} personne(s)
+			<span ng-hide="timeLeft === false">
+            <br/>Débute dans : {{timeLeft}}
+            </span>
+		</div>
+		<ul id="chat">
+			<li ng-repeat="chatMessage in chatMessages"><strong>{{chatMessage.nickname}}</strong> : {{chatMessage.message}}</li>
+		</ul>
+		<input id="chatMessage" class="type" name="message" type="text" placeholder="Chatter..." ng-model="chatMessage" ng-enter="chatSendMessage(chatMessage)">
+		<input type="button" class="submit" value="ENVOYER" ng-click="chatSendMessage(chatMessage)"></input>
+		<div style="clear: both;">
+		</div>
+		<!-- <a ng-click="removeAll()">removeall</a> -->
+	</div>
 </div>
-
-        
-        
-        <span ng-hide="timeLeft === false">
-            temps restant : {{timeLeft}}
-        </span>
-        
