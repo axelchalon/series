@@ -23,15 +23,26 @@ $(".next").click(function() {
         next.addClass('active');
         active.removeClass('active');
         active.addClass('actived');
-        input.attr("placeholder", "Numéro de l'épisode"); //@todo num
-
+        if ($("li.actived").length == 1)
+        {
+            input.attr("placeholder", "Numéro de l'épisode"); //@todo num
+            $('#searchSeries_next').hide();
+            $('#searchSeries').show();
+        }
         console.log(next.text());
+        if ($("li.actived").length == 2) {
+            input.attr("placeholder", "Un instant..."); //@todo num
+            searchSeries_episode = input.val();
+        }
+        else
+        {
         searchSeries_season = input.val();
+        }
         next.text(next.text() + ': ' + input.val());
 
 
-        if ($("li.actived").length == 2) {
-            searchSeries_episode = input.val();
+        
+        /*
             // $(".next").replaceWith( '<input type="submit" class="submit" name="submit" value="Regarder!"></input>' );
             $('#searchSeries_next').hide();
             $('#searchSeries').show();
@@ -39,7 +50,7 @@ $(".next").click(function() {
             input.prop('disabled', true);
         } else if ($("li.activated").length == 1) {
 
-        }
+        }*/
 
     }
 
@@ -50,7 +61,13 @@ $(".next").click(function() {
 $('input').keypress(function(e) {
     if (e.which == 13) {
         e.preventDefault();
-        $(".next").click();
+        
+        if ($('#searchSeries_next').is(':hidden'))
+            $("#searchSeries").click();
+        else
+            $("#searchSeries_next").click();
+        
+        return false;
     }
 });
 

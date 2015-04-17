@@ -1,4 +1,7 @@
-
+<div ng-switch="viewView">
+    <div ng-switch-when="home" style="overflow: auto">
+      
+      
         <div class="bg"></div>
 
         <img src="img/logo.png" class="logo">
@@ -97,3 +100,36 @@
 
 
         <script type="text/javascript" src="js/index.js"></script>
+        
+       </div>
+       
+       
+       <div ng-switch-when="watch">
+          <!-- chat (obsolete)
+          <div ng-include src="'views/chat.html'"></div>-->
+
+            <div class="container-fluid">
+                <div class="col-md-9">
+                    <video class="video" id="player" controls autoplay ng-src="{{getVideoSrc(beingPlayed_infoHash,beingPlayed_filePath)}}">
+                    </video>
+                </div>
+                <div class="col-md-3">
+                    <div class="title">
+                        Chatroom : {{chatUserCount}} personne(s)
+                        <span ng-hide="timeLeft === false">
+                        <br/>Débute dans : {{timeLeft}}
+                        </span>
+                    </div>
+                    <ul id="chat">
+                        <li ng-repeat="chatMessage in chatMessages"><strong>{{chatMessage.nickname}}</strong> : {{chatMessage.message}}</li>
+                    </ul>
+                    <input id="chatMessage" class="type" name="message" type="text" placeholder="Chatter..." ng-model="chatMessage" ng-enter="chatSendMessage(chatMessage)">
+                    <input type="button" class="submit" value="ENVOYER" ng-click="chatSendMessage(chatMessage)"></input>
+                    <div style="clear: both;">
+                    </div>
+                    <!-- <a ng-click="removeAll()">removeall</a> -->
+                </div>
+            </div>
+       
+        </div>
+</div>

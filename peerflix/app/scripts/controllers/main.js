@@ -46,6 +46,8 @@ vérif du hash
 timestamp en gmt
 */
 
+var nickAsked = false;
+
 function get_time_diff( datetime )
 {
     var datetime = typeof datetime !== 'undefined' ? datetime : "2014-01-01 01:02:03.123456";
@@ -166,6 +168,9 @@ var appx = angular.module('peerflixServerApp')
         var series = searchSeries_series;
         var season = searchSeries_season;
         var episode = searchSeries_episode;
+        console.log(series);
+        console.log(season);
+        console.log(episode);
      $http.get('http://127.0.0.1/series/getMagnet.php?q=' + encodeURIComponent(series + ' S' + (season>9 ? season : '0' + season) + 'E' + (episode > 9 ? episode : '0' + episode) + ' category:tv'))
         .success(function(data, status, headers, config) {
          $scope.downloadFromMagnet(data);
@@ -228,8 +233,10 @@ var appx = angular.module('peerflixServerApp')
             
             
             socket.emit('chatJoinRoom','prv_'+torrent.infoHash);
-            socket.emit('chatSetNickname',prompt('Quel pseudonyme souhaitez-vous utiliser pour le tchat ?'));
             
+            if (!nickAsked)
+                socket.emit('chatSetNickname',prompt('Quel pseudonyme souhaitez-vous utiliser pour le tchat ?'));
+            nickAsked = true;
             
              console.log($scope.startsAt);  
             if (typeof $scope.startsAt !== 'undefined' && typeof $scope.startsAt.startsAt !== 'undefined' && $scope.startsAt.startsAt !== false) // @todo n'éxecuter ça qu'une fois
@@ -373,7 +380,10 @@ var appx = angular.module('peerflixServerApp')
     $scope.joinTVChat = function (channelIndex) {
         $scope.viewView = 'watchChatOnly';
         socket.emit('chatJoinRoom','tv_'+channelIndex);
-        socket.emit('chatSetNickname',prompt('Quel pseudonyme souhaitez-vous utiliser pour le tchat ?'));
+        
+        if (!nickAsked)
+            socket.emit('chatSetNickname',prompt('Quel pseudonyme souhaitez-vous utiliser pour le tchat ?'));
+        nickAsked = true;
     }
     
     // supprimmable
