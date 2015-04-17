@@ -501,8 +501,12 @@ var appx = angular.module('peerflixServerApp')
           },1000);
       },1500); // appelé après removeAll
       
-    });
-
+    }).controller('Tv', function ($scope, $resource, $log, $q, $upload, torrentSocket, $http, $routeParams) {
+      
+      
+      var index = $routeParams.index;
+      $scope.joinTVChat(index);
+  });
 
 
 
@@ -516,6 +520,10 @@ appx.config(['$routeProvider',
       when('/sp/:index', {
         templateUrl: 'views/chat.html',
         controller: 'Sp'
+      }).
+     when('/tv/:index', {
+        templateUrl: 'views/chatOnly.html',
+        controller: 'Tv'
       })/*.
       otherwise({
         redirectTo: '/404'

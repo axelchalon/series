@@ -200,6 +200,8 @@ body {
     display: block; margin-top: 15px;
 }
 
+.chatOnly { color: black; }
+
 .poster.joinable {
     cursor: pointer;
     pointer-events: all;

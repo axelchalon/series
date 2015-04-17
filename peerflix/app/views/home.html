@@ -47,8 +47,8 @@
                   
                   
                       <div class="slide">
-                        <div class="poster" ng-click="joinTVChat($index)" ng-repeat="tvShow in tvShows" ng-class="{joinable: tvShow.joinable}" style="background-image: url({{tvShow.poster}});" title="{{tvShow.name}}"><span>Ce soir à {{tvShow.startsAt_str}} sur {{tvShow.channel}}</span></div>
-        
+                        <a class="poster" ng-href="#/tv/{{$index}}" ng-repeat="tvShow in tvShows" ng-class="{joinable: tvShow.joinable}" style="background-image: url({{tvShow.poster}});" title="{{tvShow.name}}"><span>Ce soir à {{tvShow.startsAt_str}} sur {{tvShow.channel}}</span></a>
+        <!-- ng-click="joinTVChat($index)" -->
                         <div class="serie-title"></div>
                     </div>
                 </div>
